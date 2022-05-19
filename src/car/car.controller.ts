@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import { Controller, Delete, Get, Patch, Post, Req, Res } from '@nestjs/common';
 import { CarService } from './car.service';

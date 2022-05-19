@@ -1,17 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { Car } from './car.model';
+import { HumanService } from 'src/human/human.service';
+import mongoose from 'mongoose';
 
 
 @Injectable()
 export class CarService {
-    constructor(@InjectModel('Car') private readonly CarModel: Model<Car> ) {}
+    constructor(private readonly HumanService: HumanService ) {}
 
     async createCar(req,res){
         try{
-            const newCar = await this.CarModel.create(req.body);
+            // const newDriver = await this.HumanService.createDriver();
+            // const newCar = await Car.create({
+            //     _id: new mongoose.Types.ObjectId(),
+            //     name: req.body.name,
+            //     brand: req.body.brand,
+            //     driver: newDriver._id
+            // });
+            const newCar = await Car.create(req.body);
         
             return res.json({
                 status: 'success',
@@ -27,7 +35,7 @@ export class CarService {
 
     async getAllCars(req,res){
         try{
-            const cars = await this.CarModel.find();
+            const cars = await Car.find();
         
             return res.json({
                 status: 'success',
@@ -44,7 +52,7 @@ export class CarService {
     async getCar(req,res){
         try{
             const id = req.params.id;
-            const car = await this.CarModel.findById(id);
+            const car = await Car.findById(id);
 
             if(!car){
                 throw new Error('Car not found!')
@@ -66,7 +74,7 @@ export class CarService {
     async deleteCar(req,res){
         try{
             const id = req.params.id;
-            const car = await this.CarModel.findByIdAndDelete(id);
+            const car = await Car.findByIdAndDelete(id);
             if(!car){
                 throw new Error('Car not found!')
             }
@@ -86,7 +94,7 @@ export class CarService {
     async updateCar(req,res){
         try{
             const id = req.params.id;
-            const car = await this.CarModel.findByIdAndUpdate(id, req.body, {
+            const car = await Car.findByIdAndUpdate(id, req.body, {
                 new: true,
                 runValidators: true
             });
@@ -105,5 +113,6 @@ export class CarService {
             });
         }
     }
+
 
 }
