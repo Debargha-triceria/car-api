@@ -1,118 +1,114 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { Car } from './car.model';
 import { HumanService } from 'src/human/human.service';
-import mongoose from 'mongoose';
-
 
 @Injectable()
 export class CarService {
-    constructor(private readonly HumanService: HumanService ) {}
+  constructor(
+    @InjectModel('Car') private readonly CarModel: Model<Car>,
+    private readonly HumanService: HumanService,
+  ) {}
 
-    async createCar(req,res){
-        try{
-            // const newDriver = await this.HumanService.createDriver();
-            // const newCar = await Car.create({
-            //     _id: new mongoose.Types.ObjectId(),
-            //     name: req.body.name,
-            //     brand: req.body.brand,
-            //     driver: newDriver._id
-            // });
-            const newCar = await Car.create(req.body);
-        
-            return res.json({
-                status: 'success',
-                data: newCar
-            });
-        }catch(err){
-            return res.json({
-                status: 'failed',
-                message: err.message
-            });
-        }
+  async createCar(name: string, brand: string) {
+    try {
+      const newDriverId = await this.HumanService.addDriver();
+      const newCoDriverId = await this.HumanService.addDriver();
+      const newCar = await this.CarModel.create({
+        name: name,
+        brand: brand,
+        driver: newDriverId,
+        codriver: newCoDriverId,
+      });
+      await (await newCar.populate('codriver')).populate('driver');
+
+      return {
+        status: 'success',
+        data: newCar,
+      };
+    } catch (err) {
+      return {
+        status: 'failed',
+        message: err.message,
+      };
     }
+  }
 
-    async getAllCars(req,res){
-        try{
-            const cars = await Car.find();
-        
-            return res.json({
-                status: 'success',
-                data: cars
-            });
-        }catch(err){
-            return res.json({
-                status: 'failed',
-                message: err.message
-            });
-        }
+  async getAllCars() {
+    try {
+      const cars = await this.CarModel.find();
+
+      return {
+        status: 'success',
+        data: cars,
+      };
+    } catch (err) {
+      return {
+        status: 'failed',
+        message: err.message,
+      };
     }
+  }
 
-    async getCar(req,res){
-        try{
-            const id = req.params.id;
-            const car = await Car.findById(id);
+  async getCar(params) {
+    try {
+      const car = await this.CarModel.findById(params.id);
 
-            if(!car){
-                throw new Error('Car not found!')
-            }
-        
-            return res.json({
-                status: 'success',
-                data: car
-            });
-        }catch(err){
-            return res.json({
-                status: 'failed',
-                message: err.message
-            });
-        }
+      if (!car) {
+        throw new Error('Car not found!');
+      }
+
+      return {
+        status: 'success',
+        data: car,
+      };
+    } catch (err) {
+      return {
+        status: 'failed',
+        message: err.message,
+      };
     }
+  }
 
+  async deleteCar(params) {
+    try {
+      const car = await this.CarModel.findByIdAndDelete(params.id);
+      if (!car) {
+        throw new Error('Car not found!');
+      }
 
-    async deleteCar(req,res){
-        try{
-            const id = req.params.id;
-            const car = await Car.findByIdAndDelete(id);
-            if(!car){
-                throw new Error('Car not found!')
-            }
-        
-            return res.json({
-                status: 'success',
-                data: car
-            });
-        }catch(err){
-            return res.json({
-                status: 'failed',
-                message: err.message
-            });
-        }
+      return {
+        status: 'success',
+        data: car,
+      };
+    } catch (err) {
+      return {
+        status: 'failed',
+        message: err.message,
+      };
     }
+  }
 
-    async updateCar(req,res){
-        try{
-            const id = req.params.id;
-            const car = await Car.findByIdAndUpdate(id, req.body, {
-                new: true,
-                runValidators: true
-            });
-            if(!car){
-                throw new Error('Car not found!')
-            }
-        
-            return res.json({
-                status: 'success',
-                data: car
-            });
-        }catch(err){
-            return res.json({
-                status: 'failed',
-                message: err.message
-            });
-        }
+  async updateCar(body, params) {
+    try {
+      const car = await this.CarModel.findByIdAndUpdate(params.id, body, {
+        new: true,
+        runValidators: true,
+      });
+      if (!car) {
+        throw new Error('Car not found!');
+      }
+
+      return {
+        status: 'success',
+        data: car,
+      };
+    } catch (err) {
+      return {
+        status: 'failed',
+        message: err.message,
+      };
     }
-
-
+  }
 }

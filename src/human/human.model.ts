@@ -1,14 +1,10 @@
-/* eslint-disable prettier/prettier */
-import * as mongoose from 'mongoose';
-import { Schema } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-export const HumanSchema = new mongoose.Schema({
-    _id: Schema.Types.ObjectId,
-    name: {
-        type: String,
-        required: true
+@Schema()
+export class Human extends Document {
+  @Prop({ required: true, type: String })
+  name: string;
+}
 
-    }
-});
-
-export const Human = mongoose.model('Human',HumanSchema);
+export const HumanSchema = SchemaFactory.createForClass(Human);

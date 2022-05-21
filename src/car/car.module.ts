@@ -6,8 +6,8 @@ import { CarSchema } from './car.model';
 import { HumanModule } from 'src/human/human.module';
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Car', schema: CarSchema }]),
     HumanModule,
+    MongooseModule.forFeature([{ name: 'Car', schema: CarSchema }]),
   ],
   controllers: [CarController],
   providers: [CarService],

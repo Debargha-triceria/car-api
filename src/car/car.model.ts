@@ -1,27 +1,20 @@
-/* eslint-disable prettier/prettier */
-import * as mongoose from 'mongoose';
-import { Schema } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Human } from 'src/human/human.model';
 
-export const CarSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
+@Schema()
+export class Car extends Document {
+  @Prop({ required: true, type: String })
+  name: string;
 
-    },
-    brand:{
-        type: String,
-        required: true
-    }
-    // driver: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Human'
-    // }
-});
+  @Prop({ required: true, type: String })
+  brand: string;
 
-// export interface Car{
-//     name: string,
-//     brand: string,
-//     driver: object
-// }
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Human' })
+  driver: Human;
 
-export const Car = mongoose.model('Car',CarSchema);
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Human' })
+  codriver: Human;
+}
+
+export const CarSchema = SchemaFactory.createForClass(Car);
