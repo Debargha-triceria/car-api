@@ -1,33 +1,38 @@
-/* eslint-disable prettier/prettier */
-import { Controller, Delete, Get, Patch, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { CarService } from './car.service';
-import { Request } from 'express';
-import { Response } from 'express';
 
 @Controller('car')
 export class CarController {
-    constructor(private readonly CarService: CarService){}
-    @Post()
-    async createCar(@Req() request:Request, @Res() response:Response){
-        return await this.CarService.createCar(request,response);
-    }
-    @Get()
-    async getAllCars(@Req() request:Request, @Res() response:Response){
-        return await this.CarService.getAllCars(request,response);
-    }
+  constructor(private readonly CarService: CarService) {}
+  @Post()
+  async createCar(@Body() dto: { name: string; brand: string }) {
+    return await this.CarService.createCar(dto.name, dto.brand);
+  }
+  @Get()
+  async getAllCars() {
+    return await this.CarService.getAllCars();
+  }
 
-    @Get(':id')
-    async getCar(@Req() request:Request, @Res() response:Response){
-        return await this.CarService.getCar(request,response);
-    }
+  @Get(':id')
+  async getCar(@Param() params) {
+    return await this.CarService.getCar(params);
+  }
 
-    @Delete(':id')
-    async deleteCar(@Req() request:Request, @Res() response:Response){
-        return await this.CarService.deleteCar(request,response);
-    }
+  @Delete(':id')
+  async deleteCar(@Param() params) {
+    return await this.CarService.deleteCar(params);
+  }
 
-    @Patch(':id')
-    async updateCar(@Req() request:Request, @Res() response:Response){
-        return await this.CarService.updateCar(request,response);
-    }
+  @Patch(':id')
+  async updateCar(@Body() body, @Param() params) {
+    return await this.CarService.updateCar(body, params);
+  }
 }
